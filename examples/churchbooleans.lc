@@ -1,0 +1,6 @@
+# church encodings for boolean values
+
+true  = \x.\y.x
+false = \x.\y.y
+
+main := true false false

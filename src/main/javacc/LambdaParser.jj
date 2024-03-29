@@ -1,0 +1,121 @@
+options {
+    STATIC = false;
+}
+
+PARSER_BEGIN(LambdaParser)
+
+package com.kyubey.lambda.parser;
+
+import com.kyubey.lambda.LambdaExpr;
+import java.util.ArrayList;
+import java.io.ByteArrayInputStream;
+import java.util.Stack;
+
+public class LambdaParser {
+    public static LambdaParser fromStr(String str) {
+        return fromStr(str, false);
+    }
+
+    public static LambdaParser fromStr(String str, boolean forwardSlashLambdas) {
+        if (forwardSlashLambdas)
+            str = str.replace('/', '\\');
+        return new LambdaParser(new ByteArrayInputStream(str.getBytes()));
+    }
+
+    private static class Wrapper {
+        Stack<LambdaExpr> exprs = new Stack<>();
+
+        public Wrapper() { }
+
+        public void addExpr(LambdaExpr expr) {
+            exprs.push(expr);
+        }
+
+        public LambdaExpr getExpr() {
+            assert(!exprs.isEmpty());
+            return coagulate(exprs);
+        }
+
+        private LambdaExpr coagulate(Stack<LambdaExpr> xs) {
+            assert(!exprs.isEmpty());
+            var x = xs.pop();
+            return xs.isEmpty() ? x : new LambdaExpr.Application(coagulate(xs), x);
+        }
+    }
+}
+
+PARSER_END(LambdaParser)
+
+SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+}
+
+TOKEN :
+{
+  <ID: ["a"-"z","A"-"Z"]>
+}
+
+LambdaExpr start() :
+{
+    LambdaExpr value;
+}
+{
+    value = expr() <EOF>
+    { return value; }
+    |
+    <EOF>
+    { return null; }
+}
+
+LambdaExpr expr() :
+{
+    Token t;
+    LambdaExpr expr;
+}
+{
+    "\\"
+    t = <ID>
+    "."
+    expr = expr()
+    { return new LambdaExpr.Abstract(t.image, expr); }
+    |
+    expr = term()
+    { return expr; }
+}
+
+LambdaExpr term() :
+{
+    LambdaParser.Wrapper w = new LambdaParser.Wrapper();
+    LambdaExpr expr;
+}
+{
+    expr = factor()
+    { w.addExpr(expr); }
+
+    (
+        expr = factor()
+        { w.addExpr(expr); }
+    |
+        expr = expr()
+        { w.addExpr(expr); }
+    )*
+
+    { return w.getExpr(); }
+}
+
+LambdaExpr factor() :
+{
+    Token id;
+    LambdaExpr expr;
+}
+{
+    id = <ID>
+    { return new LambdaExpr.Variable(id.image); }
+    |
+    "(" expr = expr() ")"
+    { return expr; }
+}
