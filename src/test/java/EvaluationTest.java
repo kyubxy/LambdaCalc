@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class EvaluationTests {
+public class EvaluationTest {
     private LambdaExpr parse(String rstr) {
         LambdaParser parser = LambdaParser.fromStr(rstr, true);
         try {
