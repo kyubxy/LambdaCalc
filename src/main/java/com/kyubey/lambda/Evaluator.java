@@ -1,5 +1,7 @@
 package com.kyubey.lambda;
 
+import java.util.List;
+
 import static com.kyubey.lambda.LambdaExpr.absH;
 import static com.kyubey.lambda.LambdaExpr.asAbs;
 
@@ -20,15 +22,16 @@ public class Evaluator implements LambdaExpr.Visitor<LambdaExpr> {
     }
 
     public LambdaExpr toNormal(LambdaExpr expr) {
-        return toNormal(expr, 0);
+        return toNormal(expr, 0, null);
     }
 
-    public LambdaExpr toNormal(LambdaExpr expr, int maxIters) {
+    public LambdaExpr toNormal(LambdaExpr expr, int maxIters, List<LambdaExpr> steps) {
         LambdaExpr current = expr;
         int iters = 0;
         while (true) {
+            if (steps != null)
+                steps.add(current);
             var next = current.accept(this);
-
             if (maxIters > 0) {
                 iters++;
                 if (iters > maxIters)
