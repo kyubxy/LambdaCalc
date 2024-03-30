@@ -18,7 +18,7 @@ To build and run the application for the first time, use:
 
 ```sh
 mvn package ; # this takes care of both installing dependencies and compilation
-java -cp target/LambdaCalc-1.0-SNAPSHOT.jar com.kyubey.LambdaCalcApp
+java -cp target/LambdaCalc-1.0-SNAPSHOT.jar com.kyubey.Lambda
 ```
 
 The build script in `scripts/run.sh` also executes the above.

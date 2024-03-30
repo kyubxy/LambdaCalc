@@ -5,8 +5,8 @@ import static com.kyubey.lambda.LambdaExpr.asAbs;
 
 public class Evaluator implements LambdaExpr.Visitor<LambdaExpr> {
     public enum Strategy {
-        STRATEGY_LAZY,
-        STRATEGY_EAGER,
+        LAZY,
+        EAGER,
     }
 
     private final Strategy strategy;
@@ -16,7 +16,7 @@ public class Evaluator implements LambdaExpr.Visitor<LambdaExpr> {
     }
 
     public Evaluator() {
-        this(Strategy.STRATEGY_LAZY);
+        this(Strategy.LAZY);
     }
 
     public LambdaExpr toNormal(LambdaExpr expr) {
@@ -57,7 +57,7 @@ public class Evaluator implements LambdaExpr.Visitor<LambdaExpr> {
         var lst = expr.getE1();
         var rst = expr.getE2();
         var lstabs = asAbs(lst);
-        if (strategy == Strategy.STRATEGY_LAZY) {
+        if (strategy == Strategy.LAZY) {
             // acquire the left subexpression of the application and check if it's an abstraction
             if (lstabs == null) {
                 // not an abstraction, propagate the recursion normally

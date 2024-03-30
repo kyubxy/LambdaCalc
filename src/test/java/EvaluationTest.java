@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.Stream;
 
@@ -87,7 +86,7 @@ public class EvaluationTest {
                 "(zw)(zw)"
         };
 
-        var eval = new Evaluator(Evaluator.Strategy.STRATEGY_EAGER);
+        var eval = new Evaluator(Evaluator.Strategy.EAGER);
 
         var as = parse(actualStart);
         var an = as.accept(eval);
@@ -109,7 +108,7 @@ public class EvaluationTest {
                 "(zw)(zw)"
         };
 
-        var eval = new Evaluator(Evaluator.Strategy.STRATEGY_LAZY);
+        var eval = new Evaluator(Evaluator.Strategy.LAZY);
 
         var as = parse(actualStart);
         var an = as.accept(eval);
@@ -141,8 +140,8 @@ public class EvaluationTest {
     @ParameterizedTest
     @MethodSource("churchRosserTestInputs")
     public void testChurchRosser(String actualStart, String expectedNorm) {
-        var eager = new Evaluator(Evaluator.Strategy.STRATEGY_EAGER);
-        var lazy = new Evaluator(Evaluator.Strategy.STRATEGY_LAZY);
+        var eager = new Evaluator(Evaluator.Strategy.EAGER);
+        var lazy = new Evaluator(Evaluator.Strategy.LAZY);
         var eagerNorm = eager.toNormal(parse(actualStart));
         var lazyNorm = lazy.toNormal(parse(actualStart));
         assertEquals(parse(expectedNorm), eagerNorm, "eagerNorm");
