@@ -62,8 +62,7 @@ Instead, we opt for the use of a dependency graph, a data structure used to map 
 multiple reasons
 
 1. Trees provide much better performance scalability, we can perform checks for cycles within our dependency graph to check for circular dependencies in O(?) time # TODO:
-2. Trees are streamable. Due to their recursive nature, we do not need to load an entire tree into memory. This could be helpful when we revisit this project with very, very large programs
-in mind
+2. Trees are streamable. Due to their recursive nature, we do not need to load an entire tree into memory. This could be helpful when we revisit this project with very, very large programs in mind
 3. Trees scale not only in performance but with the number of modules, this is helpful because we intend to compile the modules independently of each other. Doing so would make 
 knowing identifiers from external modules impossible. We discuss modules in more depth in the next section.
 
