@@ -1,20 +1,19 @@
 package com.kyubey;
 
-import com.kyubey.app.interactive.InteractiveRuntime;
+import com.kyubey.app.InteractiveRuntime;
 import com.kyubey.lambda.Evaluator;
+
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
 
-import java.io.FileInputStream;
-
 public class LambdaInteractive {
     public static void main(String[] args) {
         ArgumentParser parser = ArgumentParsers.newFor("lambda").build()
                 .description("An interactive evaluator for the simple lambda calculus")
-                .version("${lambda} "+ Properties.VERSION);
+                .version("${lambda} " + Properties.VERSION);
         parser.addArgument("-s", "--strategy")
                 .dest("strategy")
                 .setDefault(Evaluator.Strategy.LAZY)

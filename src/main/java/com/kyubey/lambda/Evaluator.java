@@ -25,6 +25,10 @@ public class Evaluator implements LambdaExpr.Visitor<LambdaExpr> {
         return toNormal(expr, 0, null);
     }
 
+    public LambdaExpr toNormal(LambdaExpr expr, List<LambdaExpr> steps) {
+        return toNormal(expr, 0, steps);
+    }
+
     public LambdaExpr toNormal(LambdaExpr expr, int maxIters, List<LambdaExpr> steps) {
         LambdaExpr current = expr;
         int iters = 0;

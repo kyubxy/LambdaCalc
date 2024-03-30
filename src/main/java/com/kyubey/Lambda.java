@@ -1,6 +1,8 @@
 package com.kyubey;
 
+import com.kyubey.app.StandardRuntime;
 import com.kyubey.lambda.Evaluator;
+import com.kyubey.lambda.parser.ParseException;
 import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.impl.Arguments;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
@@ -38,10 +40,25 @@ public class Lambda {
                 .action(Arguments.store())
                 .help("the evaluation strategy to use [lazy | eager], defaults to lazy evaluation");
 
+        Namespace res = null;
+
         try {
-            Namespace res = parser.parseArgs(args);
+            res = parser.parseArgs(args);
         } catch (ArgumentParserException e) {
             parser.handleError(e);
         }
+
+        assert res != null;
+
+        StandardRuntime srt = null;
+
+        try {
+            srt = new StandardRuntime();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        assert srt != null;
+        srt.run();
     }
 }

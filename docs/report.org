@@ -1,0 +1,90 @@
+#+TITLE: Automating Elementary Computer Science: The Struggle and its Corresponding Benefit
+#+AUTHOR: kyubey
+
+* Licensing
+
+* Background
+** "Elementary Computer Science"
+
+** The Lambda Calculus
+
+** Automated Proof Assistants
+
+* Motivation
+
+** Aim
+
+* Methodology
+** Software Architecture
+As with many well written pieces of software, its often best to follow best practices wherever necessary.
+
+We start with the use of the visitor design pattern.
+
+** The Lambda Calculus Calculator
+*** Evaluation as a Tiling Problem
+Although simple to execute by hand, a systematised implementation of eager and lazy evaluation of the lambda calculus is a surprisingly non-trivial task. More accurately,
+eager evaluation in particular took some time to implement. We can start by examining what a redex actually is. Lambda calculus expressions are expressable via a non-ambiguous 
+grammar, we know this because for a given expression we can construct its unique parse tree $T$. When we apply beta reduction to an expression we are merely matching a form 
+of a tree onto $T$, because the substitution yields a smaller subtree, $T$ will eventually reduce towards a normal form with fewer nodes. Indeed, we can say that beta reduction
+and evaluation of expressions as a whole is nothing more than this exact tiling problem.
+
+We know from the Church-Rosser theorem that the order in which we apply this substitution does not change the expression's normal form. However, a systematised implementation of
+beta reduction implies a deterministic heuristic that picks which subtree to reduce first. 
+
+As such we, can think of lazy evaluation as simply being a top-down application of the subtree substitution. This also makes it the easiest to implement as we 
+effectively apply a greedy heuristic to choosing redexes to act on. 
+
+Eager evaluation however is a bottom-up application of subtree substitution. This was much more difficult to implement in practice than lazy. At this stage however, I settled for
+an algorithm that makes checks at the current redex node. This check applies a function `isNormal` which determines whether a subtree is in normal form or not. If this function 
+returns true, the subtree is in normal form and the algorithm can apply the reduction. Otherwise, it will continue to search the tree.
+
+** Lambda Calculus as a Programming Language
+
+*** An Intermediate Language
+
+*** Function Naming
+In many classroom and academic contexts, the lambda calculus is rarely notated purely as just expressions. Rather, the expressions are often given names. In reality, the simple
+lambda calculus has no support for names; all functions are entirely anonymous. And in reality, the names are nothing more than shortcuts academics use to refer to more chunks
+of lambda calculus code. Addition in the Church numerals is an example. Of course, the Church encoding use exclusively lambda terms to represent and do computations on numbers
+however it is often the case they are written out in arabic, their lambda semantics inferred.
+
+We implement a similar convention in our language, however we cannot classify this as part of our lambda calculus grammar, doing so would be inaccurate. Instead we group this as 
+part of what we refer to as an intermediate language. A language that sits directly on top of the lambda calculus; it is this language that would make writing programs in the 
+lambda calculus feasible. Overall, a lambda calculus "program" would in reality be a dictionary that maps "function names" to fragments of lambda calculus code. Then, an entry-point 
+"function" (named `main`) would be defined which would kickoff the program procedure.
+
+A naive way of implementing this would be to perform a find and replace for each function name and its definition. Although simple, this approach would have many drawbacks. Firstly,
+it is important to understand the detriment of circular definitions in any function names. A find a replace on its own does not have the computational power to detect these 
+circular definitions, and extra work would need to be done to resolve these circular dependencies anyway. Secondly, the performance of a naive find and replace would be absymal,
+especially when streams are used to take input.
+
+Instead, we opt for the use of a dependency graph, a data structure used to map which function definitions depend on which other function names. We use a dependency graph for 
+multiple reasons
+
+1. Trees provide much better performance scalability, we can perform checks for cycles within our dependency graph to check for circular dependencies in O(?) time # TODO:
+2. Trees are streamable. Due to their recursive nature, we do not need to load an entire tree into memory. This could be helpful when we revisit this project with very, very large programs
+in mind
+3. Trees scale not only in performance but with the number of modules, this is helpful because we intend to compile the modules independently of each other. Doing so would make 
+knowing identifiers from external modules impossible. We discuss modules in more depth in the next section.
+
+
+
+*** Modules
+
+** The Prover and its Specification Language
+
+*** What is a Proof?
+
+*** How can we Construct a Proof?
+
+** Potential for Improvement and Expansion
+
+* Evaluation
+
+** Tests and Program Correctness
+
+** An Aside on Software Engineering
+
+** Performance
+
+* Conclusion

@@ -1,5 +1,6 @@
-package com.kyubey.app.interactive;
+package com.kyubey.app;
 
+import com.kyubey.Properties;
 import com.kyubey.lambda.Evaluator;
 import com.kyubey.lambda.LambdaExpr;
 import com.kyubey.lambda.parser.LambdaParser;
@@ -79,7 +80,7 @@ public class InteractiveRuntime {
             return;
         }
         List<LambdaExpr> steps = new ArrayList<>();
-        var norm = eval.get().toNormal(expr, 0, steps);
+        var norm = eval.get().toNormal(expr, steps);
         if (verboseEval) {
             for(var step : steps) {
                 System.out.println(step);
@@ -95,8 +96,7 @@ public class InteractiveRuntime {
         // this is such a dumb idea
 
         if (input.equalsIgnoreCase(":h")) {
-            System.out.println("Welcome to the Lambda interactive runtime");
-            System.out.println("We encode the lambda symbol λ using the backslash character \\");
+            System.out.println("Welcome to the Lambda interactive runtime v" + Properties.VERSION);
             System.out.println("Type a lambda expression to have it evaluated to normal form or use one of the following commands\n");
             System.out.println(":q - quit");
             System.out.println(":s - view evaluation mode");
@@ -105,6 +105,7 @@ public class InteractiveRuntime {
             System.out.println(":v[t|f] - whether to print all lines in evaluation - true(t) or false(f)");
             System.out.println(":c - (will attempt to) clear the terminal window");
             System.out.println();
+            System.out.println("We encode the lambda symbol λ using the backslash character \\\n");
             return ExecutionOutcome.SKIP;
         }
 

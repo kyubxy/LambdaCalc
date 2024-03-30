@@ -1,0 +1,20 @@
+options {
+    STATIC = false;
+}
+
+PARSER_BEGIN(ILParser)
+
+package com.kyubey.compilation.parsing;
+
+public class ILParser {
+}
+
+PARSER_END(ILParser)
+
+ILtree start() :
+{
+}
+{
+
+}
+

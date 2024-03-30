@@ -46,13 +46,7 @@ public class LambdaParser {
 
 PARSER_END(LambdaParser)
 
-SKIP :
-{
-  " "
-| "\t"
-| "\n"
-| "\r"
-}
+SKIP : { " " | "\t" | "\n" | "\r" }
 
 TOKEN :
 {
