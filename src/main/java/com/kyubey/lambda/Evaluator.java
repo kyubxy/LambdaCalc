@@ -41,44 +41,86 @@ public class Evaluator implements LambdaExpr.Visitor<LambdaExpr> {
         }
     }
 
-    public LambdaExpr oneStep(LambdaExpr expr) {
-        return expr.accept(this);
-    }
+    public LambdaExpr oneStep(LambdaExpr expr) { return expr.accept(this); }
 
     @Override
-    public LambdaExpr visit(LambdaExpr.Variable expr) {
-        return expr;
-    }
+    public LambdaExpr visit(LambdaExpr.Variable expr) { return expr; }
 
     @Override
-    public LambdaExpr visit(LambdaExpr.Abstract expr) {
-        return expr;
-    }
+    public LambdaExpr visit(LambdaExpr.Abstract expr) { return expr; }
 
     @Override
     public LambdaExpr visit(LambdaExpr.Application expr) {
+        /* so basically, you can think of beta reduction as matching a specific pattern of expression tree with
+        another pattern of expression tree. and then whether the approach is top-down or bottom-up is determined
+        based on whether the evaluating strategy is lazy or eager respectively. */
+        var lst = expr.getE1();
+        var rst = expr.getE2();
+        var lstabs = asAbs(lst);
         if (strategy == Strategy.STRATEGY_LAZY) {
-            var lst = expr.getE1();
-            var rst = expr.getE2();
             // acquire the left subexpression of the application and check if it's an abstraction
-            var lastr = asAbs(lst);
-            if (lastr == null) return new LambdaExpr.Application(lst.accept(this), rst.accept(this));
-            // what we want: right subtree -> [bound vars in left subtree]
-            var subst = new Substitution(lastr.getHead(), rst);
-            return lastr.accept(subst);
-        } else {
-            // TODO:
-            throw new RuntimeException("not implemented");
+            if (lstabs == null) {
+                // not an abstraction, propagate the recursion normally
+                return new LambdaExpr.Application(lst.accept(this), rst.accept(this));
+            } else {
+                // matches the form, perform the transformation immediately
+                // note we only return the body of the left abstraction
+                return Substitution.doRedex(lstabs, rst);
+            }
+        } else /* if strategy == Strategy.STRATEGY_EAGER */ {
+            // acquire the left subexpression of the application and check if it's an abstraction
+            if (lstabs == null)  {
+                // not an abstraction, propagate the recursion normally
+                return new LambdaExpr.Application(lst.accept(this), rst.accept(this));
+            } else {
+                // only reduce if the right subtree is in normal form
+                // NOTE: checking at each node whether the entire subtree is normal could be expensive
+                // TODO: cache the normal checker
+                if (rst.accept(new NormalChecker()))
+                    return Substitution.doRedex(lstabs, rst);
+                else
+                    return new LambdaExpr.Application(lst.accept(this), rst.accept(this));
+            }
+        }
+    }
+
+    static class NormalChecker implements LambdaExpr.Visitor<Boolean> {
+
+        @Override
+        public Boolean visit(LambdaExpr.Variable expr) {
+            return true;
+        }
+
+        @Override
+        public Boolean visit(LambdaExpr.Abstract expr) {
+            return expr.getBody().accept(this);
+        }
+
+        @Override
+        public Boolean visit(LambdaExpr.Application expr) {
+            if (asAbs(expr.getE1()) != null)
+                return false;   // there is an abstraction => redex
+            else
+                // no abstraction => no redex
+                return expr.getE1().accept(this) && expr.getE2().accept(this);
         }
     }
 
     static class Substitution implements LambdaExpr.Visitor<LambdaExpr> {
-        String f;
-        LambdaExpr r;
+        private final String f;
+        private final LambdaExpr r;
+
 
         // M[x:=N] <-> expr.accept(new Substitutor(x, N))
+        public static LambdaExpr doRedex(LambdaExpr.Abstract expr, LambdaExpr replace) {
+            var sub = new Substitution(expr.getHead(), replace);
+            var outexpr = expr.accept(sub);
+            // remove the head from abstractions
+            var abs = asAbs(outexpr);
+            return abs != null ? abs.getBody() : outexpr;
+        }
 
-        public Substitution(String find, LambdaExpr replace) {
+        private Substitution(String find, LambdaExpr replace) {
             f = find; r = replace;
         }
 
@@ -94,9 +136,9 @@ public class Evaluator implements LambdaExpr.Visitor<LambdaExpr> {
             // if an abstraction in the subtree shadows our find variable, terminate the recursion
             var h = absH(body);
             if (h != null && h.equals(f))
-                return body;
+                return expr;
             else
-                return body.accept(this);
+                return new LambdaExpr.Abstract(expr.getHead(), body.accept(this));
         }
 
         @Override

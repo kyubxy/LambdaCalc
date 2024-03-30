@@ -3,6 +3,12 @@ import com.kyubey.lambda.LambdaExpr;
 import com.kyubey.lambda.parser.LambdaParser;
 import com.kyubey.lambda.parser.ParseException;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -77,7 +83,7 @@ public class EvaluationTest {
         // example taken from https://comp1100-pal.github.io/worksheets/2020/05/03/lambda-calculus-complete
         String actualStart = "(/x.xx)((/y.zy)w)";
         String[] expectedSteps = new String[]{
-                "(/x.xx) zw",
+                "(/x.xx)(zw)",
                 "(zw)(zw)"
         };
 
@@ -123,17 +129,24 @@ public class EvaluationTest {
         assertEquals(parse(expectedNorm), actualNorm);
     }
 
-    @Test  // fun little property to test
-    public void testChurchRosser() {
-        // TODO: WE STILL NEED JUNIT 5 AND PARAMETERISED TESTING
-        String actualStart = "(/x.xx)((/y.zy)w)";
-        String expectedNorm = "(zw)(zw)";
+    private static Stream<Arguments> churchRosserTestInputs() {
+        return Stream.of(
+                  Arguments.of("(/x.xx)((/y.zy)w)", "(zw)(zw)")
+                , Arguments.of("(/x./y.yxy)(xx)z", "z(xx)z")
+                , Arguments.of("(/x./y.x)(/x./y.y)w", "/x./y.y")
+                , Arguments.of("(/x.xxx)(/y.yw)", "ww(/y.yw)")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("churchRosserTestInputs")
+    public void testChurchRosser(String actualStart, String expectedNorm) {
         var eager = new Evaluator(Evaluator.Strategy.STRATEGY_EAGER);
         var lazy = new Evaluator(Evaluator.Strategy.STRATEGY_LAZY);
         var eagerNorm = eager.toNormal(parse(actualStart));
         var lazyNorm = lazy.toNormal(parse(actualStart));
-        assertEquals(parse(expectedNorm), eagerNorm);
-        assertEquals(parse(expectedNorm), lazyNorm);
+        assertEquals(parse(expectedNorm), eagerNorm, "eagerNorm");
+        assertEquals(parse(expectedNorm), lazyNorm, "lazyNorm");
         // => eager == lazy
     }
 

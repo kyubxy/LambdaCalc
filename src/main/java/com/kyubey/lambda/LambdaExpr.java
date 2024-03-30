@@ -74,8 +74,10 @@ public abstract class LambdaExpr {
 
     public abstract <R> R accept (Visitor<R> v);
 
+    public abstract boolean isAlphaEquivTo(LambdaExpr expr);
+
     public static class Variable extends LambdaExpr {
-        String identifier;
+        private final String identifier;
 
         public Variable (String identifier) {
             this.identifier = identifier;
@@ -87,6 +89,11 @@ public abstract class LambdaExpr {
 
         @Override
         public <R> R accept(Visitor<R> v) { return v.visit(this); }
+
+        @Override
+        public boolean isAlphaEquivTo(LambdaExpr expr) {
+            return asVar(expr) != null && this.equals(expr);
+        }
 
         @Override
         public boolean equals(Object obj) {
@@ -102,8 +109,8 @@ public abstract class LambdaExpr {
     }
 
     public static class Abstract extends LambdaExpr {
-        String head;
-        LambdaExpr expr;
+        private final String head;
+        private final LambdaExpr expr;
 
         public Abstract(String head, LambdaExpr expr) {
             this.head = head;
@@ -122,6 +129,11 @@ public abstract class LambdaExpr {
         public <R> R accept(Visitor<R> v) { return v.visit(this); }
 
         @Override
+        public boolean isAlphaEquivTo(LambdaExpr expr) {
+            throw new RuntimeException("TODO: not implemented");
+        }
+
+        @Override
         public boolean equals(Object obj) {
             if (!(obj instanceof Abstract other))
                 return false;
@@ -137,8 +149,8 @@ public abstract class LambdaExpr {
     public static class Application extends LambdaExpr {
         private static final boolean WRAP_EVERYTHING = false;
 
-        LambdaExpr e1;
-        LambdaExpr e2;
+        private final LambdaExpr e1;
+        private final LambdaExpr e2;
 
         public Application(LambdaExpr e1, LambdaExpr e2)
         {
@@ -156,6 +168,12 @@ public abstract class LambdaExpr {
 
         @Override
         public <R> R accept(Visitor<R> v) { return v.visit(this); }
+
+        @Override
+        public boolean isAlphaEquivTo(LambdaExpr expr) {
+            var a = asApp(expr);
+            return a != null && getE1().isAlphaEquivTo(a.getE1()) && getE2().isAlphaEquivTo(a.getE2());
+        }
 
         @Override
         public boolean equals(Object obj) {
