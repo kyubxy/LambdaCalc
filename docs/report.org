@@ -35,7 +35,7 @@ As such we, can think of lazy evaluation as simply being a top-down application 
 effectively apply a greedy heuristic to choosing redexes to act on. 
 
 Eager evaluation however is a bottom-up application of subtree substitution. This was much more difficult to implement in practice than lazy. At this stage however, I settled for
-an algorithm that makes checks at the current redex node. This check applies a function `isNormal` which determines whether a subtree is in normal form or not. If this function 
+an algorithm that makes checks at the current redex node. This check applies a function ~isNormal~ which determines whether a subtree is in normal form or not. If this function 
 returns true, the subtree is in normal form and the algorithm can apply the reduction. Otherwise, it will continue to search the tree.
 
 ** Lambda Calculus as a Programming Language
