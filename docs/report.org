@@ -46,12 +46,12 @@ returns true, the subtree is in normal form and the algorithm can apply the redu
 In many classroom and academic contexts, the lambda calculus is rarely notated purely as just expressions. Rather, the expressions are often given names. In reality, the simple
 lambda calculus has no support for names; all functions are entirely anonymous. And in reality, the names are nothing more than shortcuts academics use to refer to more chunks
 of lambda calculus code. Addition in the Church numerals is an example. Of course, the Church encoding use exclusively lambda terms to represent and do computations on numbers
-however it is often the case they are written out in arabic, their lambda semantics inferred.
+however it is often the case they are written out in arabic numerals, their lambda semantics inferred.
 
 We implement a similar convention in our language, however we cannot classify this as part of our lambda calculus grammar, doing so would be inaccurate. Instead we group this as 
 part of what we refer to as an intermediate language. A language that sits directly on top of the lambda calculus; it is this language that would make writing programs in the 
 lambda calculus feasible. Overall, a lambda calculus "program" would in reality be a dictionary that maps "function names" to fragments of lambda calculus code. Then, an entry-point 
-"function" (named `main`) would be defined which would kickoff the program procedure.
+"function" (named ~main~) would be defined which would kickoff the program procedure.
 
 A naive way of implementing this would be to perform a find and replace for each function name and its definition. Although simple, this approach would have many drawbacks. Firstly,
 it is important to understand the detriment of circular definitions in any function names. A find a replace on its own does not have the computational power to detect these 
