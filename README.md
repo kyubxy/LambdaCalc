@@ -2,7 +2,7 @@
 
 Implementation of simple lambda calculus in Java. A successor to my [previous LC prototype](https://github.com/kyubxy/lambdabasic).
 
-[Calc is short for calculator](https://youtu.be/DRAAGKKNtx4).
+[Calc is short for calculator](https://youtu.be/DRAAGKKNtx4?t=27).
 
 ## Usage
 TODO:
